@@ -5,6 +5,8 @@ Base Database class for the IPC-sync database project, very similar to a regular
 """
 
 import logging
+FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
+DATEFMT = '%H:%M:%S'
 
 
 class DB:
@@ -36,7 +38,7 @@ class DB:
         :return: self.database[key] if key is a key in the dict, else None
         """
         if key in self.database.keys():
-            logging.info("Database: Got value at key %s" % str(key))
+            logging.info("Database: Got value at key %s which is %s" % (str(key), str(self.database[key])))
             return self.database[key]
         else:
             logging.warning("Database: Tried to get value at nonexistent key %s, returned None instead" % str(key))
@@ -57,4 +59,4 @@ class DB:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="DB.log", filemode="a", level=logging.DEBUG)
+    logging.basicConfig(filename="DB.log", filemode="a", level=logging.DEBUG, format=FORMAT, datefmt=DATEFMT)

@@ -1,7 +1,10 @@
 import threading
 import multiprocessing
-from FileDB import FileDB
+from filedb import FileDB
 import logging
+
+FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
+DATEFMT = '%H:%M:%S'
 
 
 class SyncDB:
@@ -52,4 +55,4 @@ class SyncDB:
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="SyncDB.log", filemode="a", level=logging.DEBUG)
+    logging.basicConfig(filename="SyncDB.log", filemode="a", level=logging.DEBUG, format=FORMAT, datefmt=DATEFMT)

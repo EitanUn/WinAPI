@@ -4,11 +4,14 @@ Date: 08/11/22
 Database class with file saving and writing capabilities, database is saved in database.bin, can be transferred
 Inherits from DB, super of the IPC-sync database class
 """
-from DB import DB
+from db import DB
 from pickle import dump, load
 import logging
+import os
 
 FILE = "database.bin"
+FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
+DATEFMT = '%H:%M:%S'
 
 
 class FileDB(DB):
@@ -20,6 +23,9 @@ class FileDB(DB):
         Constructor for file database
         """
         super().__init__()
+        if not os.path.exists(FILE):
+            with open(FILE, "wb") as file:
+                dump({}, file)
 
     def load(self):
         """
@@ -79,4 +85,4 @@ class FileDB(DB):
 
 
 if __name__ == '__main__':
-    logging.basicConfig(filename="FileDB.log", filemode="a", level=logging.DEBUG)
+    logging.basicConfig(filename="FileDB.log", filemode="a", level=logging.DEBUG, format=FORMAT, datefmt=DATEFMT)
