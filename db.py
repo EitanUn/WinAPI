@@ -38,7 +38,7 @@ class DB:
         :return: self.database[key] if key is a key in the dict, else None
         """
         if key in self.database.keys():
-            logging.info("Database: Got value at key %s which is %s" % (str(key), str(self.database[key])))
+            logging.info("Database: Got value at key %s" % str(key))
             return self.database[key]
         else:
             logging.warning("Database: Tried to get value at nonexistent key %s, returned None instead" % str(key))
