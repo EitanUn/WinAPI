@@ -27,7 +27,7 @@ class DB:
         :param val: value to set
         :return: succeeded (True/False)
         """
-        logging.info("Database: Set value of key %s to %s" % (str(key), str(val)))
+        # logging.info("Database: Set value of key %s to %s" % (str(key), str(val)))
         self.database.update({key: val})
         return True
 
@@ -38,10 +38,10 @@ class DB:
         :return: self.database[key] if key is a key in the dict, else None
         """
         if key in self.database.keys():
-            logging.info("Database: Got value at key %s" % str(key))
+            # logging.info("Database: Got value at key %s" % str(key))
             return self.database[key]
         else:
-            logging.warning("Database: Tried to get value at nonexistent key %s, returned None instead" % str(key))
+            # logging.warning("Database: Tried to get value at nonexistent key %s, returned None instead" % str(key))
             return None
 
     def delete_value(self, key):
@@ -51,11 +51,17 @@ class DB:
         :return: deleted value if successful
         """
         try:
-            logging.info("Database: Tried to delete value at key %s" % str(key))
+            # logging.info("Database: Tried to delete value at key %s" % str(key))
             return self.database.pop(key)
         except KeyError:
-            logging.error("Database: Tried to delete value at nonexistent key %s, returned None instead" % str(key))
+            # logging.error("Database: Tried to delete value at nonexistent key %s, returned None instead" % str(key))
             return None
+
+    def __str__(self):
+        """
+        tostring function for database type
+        """
+        return str(self.database)
 
 
 if __name__ == '__main__':

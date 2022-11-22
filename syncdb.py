@@ -45,8 +45,9 @@ class SyncDB:
 
     def get_value(self, key):
         self.read_get()
-        self.database.get_value(key)
+        res = self.database.get_value(key)
         self.read_release()
+        return res
 
     def delete_value(self, key):
         self.write_get()

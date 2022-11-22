@@ -32,18 +32,18 @@ class FileDB(DB):
         Read database from the save file
         """
         with open(FILE, "rb") as file:
-            logging.debug("File Database: Opened file %s for reading" % FILE)
+            # logging.debug("File Database: Opened file %s for reading" % FILE)
             self.database = load(file)
-            logging.debug("File Database: Loaded database from file " + FILE)
+            # logging.debug("File Database: Loaded database from file " + FILE)
 
     def dump(self):
         """
         Write database to file
         """
         with open(FILE, "wb") as file:
-            logging.debug("File Database: Opened file %s for writing" % FILE)
+            # logging.debug("File Database: Opened file %s for writing" % FILE)
             dump(self.database, file)
-            logging.debug("File Database: Updated database to file " + FILE)
+            # logging.debug("File Database: Updated database to file " + FILE)
 
     def set_value(self, key, val):
         """
