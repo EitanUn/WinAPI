@@ -2,27 +2,26 @@ import threading
 import multiprocessing
 from filedb import FileDB
 import logging
+from win32event import CreateMutex, CreateSemaphore, WaitForSingleObject, ReleaseMutex, ReleaseSemaphore, \
+    OpenMutex, OpenSemaphore, SYNCHRONIZE
 
 FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
 DATEFMT = '%H:%M:%S'
+READNAME = "read"
+WRITENAME = "write"
 
 
 class SyncDB:
-    def __init__(self, db: FileDB, threaded):
+    def __init__(self, db: FileDB):
         self.database = db
-        if threaded:
-            self.read = threading.Semaphore(10)
-            self.write = threading.Lock()
-        else:
-            self.read = multiprocessing.Semaphore(10)
-            self.write = multiprocessing.Lock()
+        CreateSemaphore(None, 0, 10, READNAME)
 
     def read_get(self):
-        self.read.acquire()
+        WaitForSingleObject(OpenSemaphore(SYNCHRONIZE, True, READNAME))
         logging.debug("Sync Database: acquired reading permissions")
 
     def read_release(self):
-        self.read.release()
+        ReleaseSemaphore(OpenSemaphore(SYNCHRONIZE, True, READNAME))
         logging.debug("Sync Database: released reading permissions")
 
     def write_get(self):

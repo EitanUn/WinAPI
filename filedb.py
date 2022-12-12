@@ -4,10 +4,15 @@ Date: 08/11/22
 Database class with file saving and writing capabilities, database is saved in database.bin, can be transferred
 Inherits from DB, super of the IPC-sync database class
 """
+import pickle
+
 from db import DB
-from pickle import dump, load
+from pickle import dumps, loads
 import logging
 import os
+import win32api
+import win32gui
+import win32file
 
 FILE = "database.bin"
 FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
@@ -23,27 +28,34 @@ class FileDB(DB):
         Constructor for file database
         """
         super().__init__()
-        if not os.path.exists(FILE):
-            with open(FILE, "wb") as file:
-                dump({}, file)
 
     def load(self):
         """
         Read database from the save file
         """
-        with open(FILE, "rb") as file:
-            # logging.debug("File Database: Opened file %s for reading" % FILE)
-            self.database = load(file)
-            # logging.debug("File Database: Loaded database from file " + FILE)
+        logging.debug("File Database: Opened file %s for reading" % FILE)
+        file = win32file.CreateFileW(FILE, win32file.GENERIC_READ, 0, None, win32file.OPEN_ALWAYS)
+        try:
+            data = win32file.ReadFile(file, 100000000)
+            assert data[0] == 0
+            self.database = loads(data[1])
+        except EOFError:
+            self.database = {}
+        finally:
+            win32file.CloseHandle(file)
+            logging.debug("File Database: Loaded database from file " + FILE)
 
     def dump(self):
         """
         Write database to file
         """
-        with open(FILE, "wb") as file:
-            # logging.debug("File Database: Opened file %s for writing" % FILE)
-            dump(self.database, file)
-            # logging.debug("File Database: Updated database to file " + FILE)
+        logging.debug("File Database: Opened file %s for writing" % FILE)
+        file = win32file.CreateFileW(FILE, win32file.GENERIC_WRITE, 0, None, win32file.OPEN_ALWAYS)
+        try:
+            win32file.WriteFile(file, dumps(self.database))
+        finally:
+            win32file.CloseHandle(file)
+            logging.debug("File Database: Dumped database to file " + FILE)
 
     def set_value(self, key, val):
         """
