@@ -1,9 +1,13 @@
-import threading
-import multiprocessing
+"""
+Author: Eitan Unger
+Date: 13/12/22
+Synchronous database class using winAPI Semaphores and Mutex.
+Database is saved in database.bin, can be transferred, using FileDB as the database itself.
+"""
+
 from filedb import FileDB
 import logging
-from win32event import CreateMutex, CreateSemaphore, WaitForSingleObject, ReleaseMutex, ReleaseSemaphore, \
-    OpenMutex, OpenSemaphore, SYNCHRONIZE
+from win32event import CreateMutex, CreateSemaphore, WaitForSingleObject, ReleaseMutex, ReleaseSemaphore, INFINITE
 
 FORMAT = '%(asctime)s.%(msecs)03d - %(message)s'
 DATEFMT = '%H:%M:%S'
@@ -14,26 +18,27 @@ WRITENAME = "write"
 class SyncDB:
     def __init__(self, db: FileDB):
         self.database = db
-        CreateSemaphore(None, 0, 10, READNAME)
+        self.read = CreateSemaphore(None, 10, 10, READNAME)
+        self.write = CreateMutex(None, False, WRITENAME)
 
     def read_get(self):
-        WaitForSingleObject(OpenSemaphore(SYNCHRONIZE, True, READNAME))
+        WaitForSingleObject(self.read, INFINITE)
         logging.debug("Sync Database: acquired reading permissions")
 
     def read_release(self):
-        ReleaseSemaphore(OpenSemaphore(SYNCHRONIZE, True, READNAME))
+        ReleaseSemaphore(self.read)
         logging.debug("Sync Database: released reading permissions")
 
     def write_get(self):
-        self.write.acquire()
+        WaitForSingleObject(self.write, INFINITE)
         for i in range(10):
-            self.read.acquire()
+            WaitForSingleObject(self.read, INFINITE)
         logging.debug("Sync Database: acquired writing permissions")
 
     def write_release(self):
         for i in range(10):
-            self.read.release()
-        self.write.release()
+            ReleaseSemaphore(self.read)
+        ReleaseMutex(self.write)
         logging.debug("Sync Database: released writing permissions")
 
     def set_value(self, key, val):

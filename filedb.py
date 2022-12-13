@@ -1,17 +1,15 @@
 """
 Author: Eitan Unger
-Date: 08/11/22
-Database class with file saving and writing capabilities, database is saved in database.bin, can be transferred
-Inherits from DB, super of the IPC-sync database class
+Date: 13/12/22
+Database class with file saving and writing capabilities, using winAPI.
+Database is saved in database.bin, can be transferred
+Inherits from DB
 """
 import pickle
 
 from db import DB
 from pickle import dumps, loads
 import logging
-import os
-import win32api
-import win32gui
 import win32file
 
 FILE = "database.bin"
@@ -34,7 +32,7 @@ class FileDB(DB):
         Read database from the save file
         """
         logging.debug("File Database: Opened file %s for reading" % FILE)
-        file = win32file.CreateFileW(FILE, win32file.GENERIC_READ, 0, None, win32file.OPEN_ALWAYS)
+        file = win32file.CreateFileW(FILE, win32file.GENERIC_READ, 0, None, win32file.OPEN_ALWAYS, 0, None)
         try:
             data = win32file.ReadFile(file, 100000000)
             assert data[0] == 0
@@ -50,12 +48,12 @@ class FileDB(DB):
         Write database to file
         """
         logging.debug("File Database: Opened file %s for writing" % FILE)
-        file = win32file.CreateFileW(FILE, win32file.GENERIC_WRITE, 0, None, win32file.OPEN_ALWAYS)
+        file = win32file.CreateFileW(FILE, win32file.GENERIC_WRITE, 0, None, win32file.CREATE_ALWAYS, 0, None)
         try:
             win32file.WriteFile(file, dumps(self.database))
+            logging.debug("File Database: Dumped database to file " + FILE)
         finally:
             win32file.CloseHandle(file)
-            logging.debug("File Database: Dumped database to file " + FILE)
 
     def set_value(self, key, val):
         """
