@@ -31,8 +31,9 @@ class FileDB(DB):
         """
         Read database from the save file
         """
+        file = win32file.CreateFileW(FILE, win32file.GENERIC_READ, win32file.FILE_SHARE_READ
+                                     , None, win32file.OPEN_ALWAYS, 0, None)
         logging.debug("File Database: Opened file %s for reading" % FILE)
-        file = win32file.CreateFileW(FILE, win32file.GENERIC_READ, 0, None, win32file.OPEN_ALWAYS, 0, None)
         try:
             data = win32file.ReadFile(file, 100000000)
             assert data[0] == 0

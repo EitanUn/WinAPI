@@ -21,7 +21,7 @@ def test_read(db):
 
 def main():
     logging.debug("Starting tests for Multithreading")
-    db = SyncDB(FileDB(), True)
+    db = SyncDB(FileDB())
     logging.debug("\n--------------------------------------------------------\n")
     logging.info("testing simple write perms")
     p1 = threading.Thread(target=test_write, args=(db, ))

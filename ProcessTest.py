@@ -21,7 +21,7 @@ def test_read(db):
 
 def main():
     logging.debug("Starting tests for Multiprocessing")
-    db = SyncDB(FileDB(), False)
+    db = SyncDB(FileDB())
     logging.debug("\n--------------------------------------------------------\n")
     logging.info("testing simple write perms")
     p1 = multiprocessing.Process(target=test_write, args=(db, ))
